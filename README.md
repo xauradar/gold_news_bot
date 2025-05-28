@@ -1,1 +1,0 @@
-# gold_news_bot
