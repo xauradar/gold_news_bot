@@ -11,8 +11,11 @@ TOKEN = '8009592933:AAHQlnciCn0tiFItcFhOgvtAQ4ACnOxZjfw'
 CHAT_ID = '7042701868'
 
 # News keywords (gold-related)
-KEYWORDS = ["CPI", "PPI", "NFP", "FOMC", "Federal Funds", "Unemployment", "Retail Sales", "ISM", "Inflation"]
-
+KEYWORDS = [ "CPI", "PPI", "NFP", "FOMC", "Federal Funds", "Unemployment",
+    "Retail Sales", "ISM", "GDP", "Inflation", "Jobless Claims",
+    "Consumer Confidence", "Trade Balance", "Industrial Production",
+    "Housing Starts", "Durable Goods", "Fed Speak", "Interest Rate",
+    "Labor Market", "Wage Growth"]
 # Initialize bot
 bot = Bot(token=TOKEN)
 
