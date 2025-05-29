@@ -10,20 +10,20 @@ import datetime
 TOKEN = '8009592933:AAHQlnciCn0tiFItcFhOgvtAQ4ACnOxZjfw'
 CHAT_ID = '7042701868'
 
-# News keywords to watch
+# Keywords to watch
 KEYWORDS = ["CPI", "PPI", "NFP", "FOMC", "Federal Funds", "Unemployment", "Retail Sales", "ISM"]
 
-# Telegram Bot setup
+# Setup bot
 bot = Bot(token=TOKEN)
 
-# Flask app setup
+# Setup Flask app
 app = Flask(__name__)
 
 @app.route('/')
 def home():
     return 'Gold News Bot is running!'
 
-# Function to fetch high-impact news from ForexFactory
+# Function to get news
 def get_news():
     url = "https://www.forexfactory.com/calendar.php"
     res = requests.get(url)
@@ -33,27 +33,39 @@ def get_news():
 
     for row in rows:
         try:
-            impact = row.find("td", class_="calendar__impact").find("span")
-            if not impact or "High" not in impact.get("title", ""):
+            impact_span = row.find("td", class_="calendar__impact").find("span")
+            if not impact_span:
+                continue
+
+            impact_title = impact_span.get("title", "")
+            if not any(level in impact_title for level in ["Low", "Medium", "High"]):
                 continue
 
             title = row.find("td", class_="calendar__event").text.strip()
             time_str = row.find("td", class_="calendar__time").text.strip()
 
             if any(k in title for k in KEYWORDS) and ":" in time_str:
-                news_list.append((time_str, title))
+                color = ""
+                if "High" in impact_title:
+                    color = "🔴"
+                elif "Medium" in impact_title:
+                    color = "🟠"
+                elif "Low" in impact_title:
+                    color = "🟡"
+
+                news_list.append((time_str, title, color))
         except:
             continue
 
     return news_list
 
-# Function to check and send alerts
+# Function to notify
 def notify():
     while True:
         now = datetime.datetime.utcnow()
         news_items = get_news()
 
-        for time_str, title in news_items:
+        for time_str, title, color in news_items:
             try:
                 h, m = map(int, time_str.split(':'))
                 event_time = now.replace(hour=h, minute=m, second=0, microsecond=0)
@@ -62,15 +74,15 @@ def notify():
 
                 diff = (event_time - now).total_seconds()
                 if 3540 < diff < 3660:
-                    bot.send_message(chat_id=CHAT_ID, text=f"⚠️ High Impact News: {title} at {time_str} UTC")
+                    bot.send_message(chat_id=CHAT_ID, text=f"{color} News: {title} at {time_str} UTC")
             except:
                 continue
 
-        time.sleep(300)  # Check every 5 minutes
+        time.sleep(300)
 
-# Start notify() in background thread
+# Background thread
 threading.Thread(target=notify, daemon=True).start()
 
-# Run Flask app
+# Run app
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
