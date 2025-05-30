@@ -10,13 +10,11 @@ import pytz
 TOKEN = '8009592933:AAHQlnciCn0tiFItcFhOgvtAQ4ACnOxZjfw'
 CHAT_ID = '7042701868'
 
-KEYWORDS = [
-    "CPI", "PPI", "NFP", "FOMC", "Federal Funds", "Unemployment",
+KEYWORDS = [ "CPI", "PPI", "NFP", "FOMC", "Federal Funds", "Unemployment",
     "Retail Sales", "ISM", "GDP", "Inflation", "Jobless Claims",
     "Consumer Confidence", "Trade Balance", "Industrial Production",
     "Housing Starts", "Durable Goods", "Fed Speak", "Interest Rate",
-    "Labor Market", "Wage Growth"
-]
+    "Labor Market", "Wage Growth"]
 
 bot = Bot(token=TOKEN)
 app = Flask(__name__)
@@ -171,11 +169,6 @@ def notify():
         time.sleep(300)
 
 threading.Thread(target=notify, daemon=True).start()
-
-try:
-    bot.send_message(chat_id=CHAT_ID, text="✅ Telegram bot connected successfully.")
-except Exception as e:
-    print("Telegram test message failed:", e)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
